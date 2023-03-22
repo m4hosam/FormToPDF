@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import PDFStyle1 from './PDFStyle1'
-import PDFStyle2 from './PDFStyle2'
-import PDFStyle3 from './PDFStyle3'
-import { BlobProvider, Document, Page } from '@react-pdf/renderer';
+import Thumbnail1 from './Thumbnail/Thumbnail1'
+import Thumbnail2 from './Thumbnail/Thumbnail2'
+import Thumbnail3 from './Thumbnail/Thumbnail3'
+import PDFStyle1 from './PDF/PDFStyle1'
+import PDFStyle2 from './PDF/PDFStyle2'
+import PDFStyle3 from './PDF/PDFStyle3'
+import { PDFViewer, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
+
+const styles = StyleSheet.create({
+  viewer: {
+    width: "240px",
+    height: "405px",
+    borderRadius: '7px'
+  }
+});
 
 
 function App() {
+  const smallScreen = useMediaQuery("(max-width: 900px)");
+
   const [submitted, setSubmitted] = useState(false)
+
   const [data, setData] = useState({
     fName: "",
     lName: "",
@@ -34,6 +49,46 @@ function App() {
     event.preventDefault();
     setSubmitted(true)
   }
+
+
+  function MobileThumbnail() {
+    return (<>
+      <PDFDownloadLink style={{ textDecoration: 'none' }} document={<PDFStyle1 data={data} />} fileName="form1.pdf">
+
+        {({ blob, url, loading, error }) =>
+          loading ? 'Loading document...' : <Thumbnail1 data={data} />
+        }
+      </PDFDownloadLink>
+      <PDFDownloadLink style={{ textDecoration: 'none' }} document={<PDFStyle2 data={data} />} fileName="form2.pdf">
+
+        {({ blob, url, loading, error }) =>
+          loading ? 'Loading document...' : <Thumbnail2 data={data} />
+        }
+      </PDFDownloadLink>
+      <PDFDownloadLink style={{ textDecoration: 'none' }} document={<PDFStyle3 data={data} />} fileName="form3.pdf">
+
+        {({ blob, url, loading, error }) =>
+          loading ? 'Loading document...' : <Thumbnail3 data={data} />
+        }
+      </PDFDownloadLink>
+    </>)
+  }
+
+
+  function DesktopThumbnail() {
+    return (<>
+      <PDFViewer style={styles.viewer}>
+        <PDFStyle1 data={data} />
+      </PDFViewer>
+      <PDFViewer style={styles.viewer}>
+        <PDFStyle2 data={data} />
+      </PDFViewer>
+      <PDFViewer style={styles.viewer}>
+        <PDFStyle3 data={data} />
+      </PDFViewer>
+    </>)
+  }
+
 
   return (
     <>
@@ -96,21 +151,12 @@ function App() {
           flexDirection={{ xs: 'column', md: 'row' }}
           sx={{ mx: { lg: 30, md: 10 } }}
         >
-          <BlobProvider document={<PDFStyle1 data={data} />}>
+          {smallScreen ?
+            < MobileThumbnail />
+            :
+            < DesktopThumbnail />
+          }
 
-            {({ blob, url, loading }) => {
-              return loading ? <>asd</> : (
-                <Document file={url}
-                  onLoadSuccess={(pdf) => this.handleLoadSuccess(pdf, blob)}
-                  renderMode="canvas">
-                  <Page pageNumber={1}
-                    width={window.innerWidth} />
-                </Document>
-              );
-            }}
-          </BlobProvider>
-          <PDFStyle2 data={data} />
-          <PDFStyle3 data={data} />
         </Box>
         :
         <div></div>

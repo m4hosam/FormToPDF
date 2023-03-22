@@ -4,7 +4,6 @@ import {
     Text,
     View,
     StyleSheet,
-    PDFViewer,
 } from "@react-pdf/renderer";
 // Create styles
 const styles = StyleSheet.create({
@@ -73,7 +72,6 @@ function BasicDocument(props) {
                 </View>
             </Page>
         </Document>
-
     );
 }
 export default BasicDocument;
